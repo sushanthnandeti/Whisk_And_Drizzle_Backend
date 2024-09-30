@@ -79,7 +79,7 @@ export const login =  async (req,res) => {
         const {email, password} = req.body;
         const user = await User.findOne({email});
         
-        console.log("test1");
+        console.log(user);
 
         if (user && (await user.comparePassword(password))) {
             console.log("test2");
@@ -94,7 +94,7 @@ export const login =  async (req,res) => {
                 role: user.role,
             });
 
-        } else{ 
+        } else { 
             res.status(401).json({message: "Invalid Credentials"});
         }
         
