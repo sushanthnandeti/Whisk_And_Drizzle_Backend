@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getAllProducts, getFeaturedProducts , createProduct , deleteProduct , getRecommendedProducts , getProductsByCategory} from "../controllers/product.controllers.js";
+import { getAllProducts, getFeaturedProducts , createProduct , deleteProduct , getRecommendedProducts , getProductsByCategory , toggleFeaturedProduct} from "../controllers/product.controllers.js";
 import { protectRoute, adminRoute} from "../middleware/auth.middleware.js";
 
 
@@ -11,6 +11,7 @@ router.get("/featured", getFeaturedProducts);
 router.get("/recommendations", getRecommendedProducts);
 router.get("/category/:category", getProductsByCategory);
 router.post("/", protectRoute, adminRoute, createProduct);
+router.put("/", protectRoute, adminRoute, toggleFeaturedProduct);
 router.delete("/", protectRoute, adminRoute, deleteProduct);
 
 

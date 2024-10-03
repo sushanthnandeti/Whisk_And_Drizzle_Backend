@@ -138,3 +138,34 @@ export const getProductsByCategory = async(req,res) => {
         
     }
 }
+
+export const toggleFeaturedProduct = async(req,res) => {
+    
+    try {
+        const product = await Product.findById(req.params.id);
+
+        if(product){
+            product.isFeatured = !product.isFeatured;
+            const updatedProduct = await product.save();
+            await updateFeaturedProductsCache();
+            res.json(updatedProduct);
+        }    
+        else {
+            res.status(400).json({message: "Product not Found"})
+        }
+
+    } catch (error) {
+        onsole.log("Error in toggleFeaturedProduct controller", error.message);
+        res.status(500).json({ message : "server error", error: error.message});
+    }
+}
+
+async function updateFeaturedProductsCache() {
+    try {
+        const featuredProducts = await Product.find({isFeatured: true}).lean();
+        await redis.set("featured_products", JSON.stringify(featuredProducts));
+
+    } catch (error) {
+        console.log("Error in update cache function");
+    }
+}
