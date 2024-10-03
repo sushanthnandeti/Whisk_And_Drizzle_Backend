@@ -82,7 +82,6 @@ export const login =  async (req,res) => {
         console.log(user);
 
         if (user && (await user.comparePassword(password))) {
-            console.log("test2");
             const { accessToken, refreshToken} = generateTokens(user._id);
             await storeRefreshToken(user._id, refreshToken);
             setCookies(res, accessToken, refreshToken);
@@ -133,22 +132,16 @@ export const refreshToken = async(req, res) => {
 
             return res.status(401).json({message: "No refresh token found"});
         }
-
-        console.log("Test1")
+    
         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         const storedToken = await redis.get(`refresh_token: ${decoded.userId}`);   
-
-        console.log("Test2")
 
         if(storedToken !== refreshToken){
             return res.status(401).json({message: "Invalid Refresh Token"});
         }
-
-        console.log("Test3")
         
         const accessToken = jwt.sign({userId : decoded.userId}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m", });
 
-        console.log("Test4")
 
         res.cookie("accessToken", accessToken, 
         { 
@@ -167,3 +160,4 @@ export const refreshToken = async(req, res) => {
         
     };
 }
+
