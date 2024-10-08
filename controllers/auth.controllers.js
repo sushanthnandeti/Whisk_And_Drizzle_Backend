@@ -75,12 +75,13 @@ export const signup =  async (req,res) => {
 export const login =  async (req,res) => {
     
     try {
-        
+        console.log(req.body)
         const {email, password} = req.body;
+        console.log(req.body)
         const user = await User.findOne({email});
-        
+        console.log("Execution done")
         console.log(user);
-
+        console.log("Execution done again")
         if (user && (await user.comparePassword(password))) {
             const { accessToken, refreshToken} = generateTokens(user._id);
             await storeRefreshToken(user._id, refreshToken);
@@ -94,7 +95,7 @@ export const login =  async (req,res) => {
             });
 
         } else { 
-            res.status(401).json({message: "Invalid Credentials"});
+            res.status(401).json({message: "Invalid Email or Password"});
         }
         
     } catch (error) { 
