@@ -7,7 +7,7 @@ export const getAllProducts = async(req,res) => {
     try {
         const products = await Product.find({});
         res.json({products})
-        
+         
     } catch (error) {
         console.log("Error in fetching all Products", error.message);
         res.status(500).json({message : "Internal Server Error", error: error.message});
@@ -81,7 +81,7 @@ export const deleteProduct = async(req,res) => {
         }
 
         if (product.image) {
-            const publicId = product.image.split("/").pop().split()(".")[0];
+            const publicId = product.image.split("/").pop().split(".")[0];
             try {
                 await cloudinary.uploader.destroy(`products/${publicId}`);
                 console.log("Image deleted successfully from Cloudinary");
@@ -92,18 +92,19 @@ export const deleteProduct = async(req,res) => {
             }
 
             await Product.findByIdAndDelete(req.params.id);
+            res.json({ message: "Product deleted successfully" });
         }
     } catch (error) {
         console.log("Error in deleteProduct controller", error.message);
         res.status(500).json({message: "server error", error: error.message});
     }
-}
+};
 
 export const getRecommendedProducts = async(req,res) => {
     try {
         const products = await Product.aggregate([
             {
-                $sample : {size : 3}
+                $sample : {size : 4}
             },
             {
                 $project : {
@@ -130,7 +131,7 @@ export const getProductsByCategory = async(req,res) => {
 
     try {
         const products = await Product.find({category});
-        res.json(products);
+        res.json({products});
 
     } catch (error) {
         console.log("Error in getProductsByCategory controller", error.message);
