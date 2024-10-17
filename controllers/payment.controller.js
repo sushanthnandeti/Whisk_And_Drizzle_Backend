@@ -1,20 +1,20 @@
 import Coupon from "../models/coupon.model.js";
 import { stripe } from "../lib/stripe.js";
 import Order from "../models/order.model.js";
+import { sendSuccessEmail } from "../mailtrap/emails.js";
 
 export const createCheckoutSession = async(req,res) => {
 
     try {
         
-        const {products, couponCode} = req.body; 
+        const {products, couponCode, user} = req.body; 
 
         if(!Array.isArray(products) || products.length === 0) {
             res.status(500).json({ error : "Invalid or Empty Array"});    
         } 
     
         let totalAmount = 0;
-    
-       
+
 
         const lineItems = products.map(product => {
             const amount = Math.round(product.price * 100) // Stripe wants us to send the amount in cents
@@ -37,7 +37,7 @@ export const createCheckoutSession = async(req,res) => {
         
         let coupon = null;
         if(couponCode) {
-            coupon = await Coupon.findOne({code:couponCode, userId: req.user, isActive:true});
+            coupon = await Coupon.findOne({code:couponCode, userId: req.user._id, isActive:true});
             if(coupon) {
                 totalAmount-= Math.round(totalAmount * coupon.discountPercentage / 100);
             }
@@ -66,6 +66,7 @@ export const createCheckoutSession = async(req,res) => {
 						price: p.price,
 					}))
 				),
+                userEmail: req.user.email
 			},
 		});
 
@@ -92,6 +93,9 @@ async function createStripeCoupon(discountPercentage) {
 }
 
 async function createNewCoupon(userId) {
+
+    await Coupon.findOneAndDelete({userId});
+
     const newCoupon = new Coupon({
         code:"GIFT" + Math.random().toString(36).substring(2,8).toUpperCase(),
         discountPercentage : 10,
@@ -99,6 +103,8 @@ async function createNewCoupon(userId) {
         userId : userId
     })
 
+    console.log("Coupon created");
+    
     await newCoupon.save();
     
     return newCoupon;
@@ -137,6 +143,10 @@ export const checkoutSuccess = async (req,res) => {
         })
 
         await newOrder.save();
+
+        const userEmail = session.metadata.userEmail; // You may need to save user email in metadata during checkout session creation
+        await sendSuccessEmail(userEmail); // Call the email function
+
         res.status(200).json({
             success: true, 
             message: "Payment Successful, order created, and coupon deactivated if used. ",

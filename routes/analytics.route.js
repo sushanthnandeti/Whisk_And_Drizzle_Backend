@@ -14,7 +14,7 @@ router.get("/", protectRoute, adminRoute, async(req,res) => {
         // Getting the sales data for the past seven days
 
         const endDate = new Date();
-        const startDate = new Date(endData.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
 
         const dailySalesData = await getDailySalesData(startDate, endDate);
 
