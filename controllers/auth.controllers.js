@@ -170,3 +170,23 @@ export const getProfile = async(req,res) => {
         res.status(500).json({message : "Server Error", error: error.message})
     }
 }
+
+export const togglePrivacy = async (req, res) => {
+    try {
+    
+        const user = req.user;
+        user.privacy = !user.privacy;
+
+        await user.save();
+
+        res.json({ 
+            message: "Privacy settings updated successfully", 
+            privacy: user.privacy 
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server Error",
+            error: error.message
+        });
+    }
+};

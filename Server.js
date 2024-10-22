@@ -8,6 +8,7 @@
     import couponRoutes from "./routes/coupon.route.js";
     import paymentRoute from "./routes/payment.route.js";
     import analyticsRoute from "./routes/analytics.route.js";
+    import ordersRoute from "./routes/orders.route.js";
 
     import {connectDB} from "./lib/db.js";
 
@@ -33,6 +34,7 @@
     app.use("/api/coupons", couponRoutes);
     app.use("/api/payments", paymentRoute);
     app.use("/api/analytics", analyticsRoute);
+    app.use("/api/orders", ordersRoute);
 
     app.listen(PORT, () => {
         console.log(`Server is running on Port ${PORT}`);
