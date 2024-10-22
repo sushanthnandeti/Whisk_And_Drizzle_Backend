@@ -190,3 +190,68 @@ export const togglePrivacy = async (req, res) => {
         });
     }
 };
+
+// Changing Credentials logid
+
+export const changeName = async (req, res) => {
+    const { newName } = req.body;
+
+    if (!newName) {
+        return res.status(400).json({ message: "New name is required" });
+    }
+
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if the new name is already taken (if you have name uniqueness in your system)
+        const nameExists = await User.findOne({ name: newName });
+        if (nameExists && nameExists._id.toString() !== req.user._id.toString()) {
+            return res.status(400).json({ message: "Name is already taken" });
+        }
+
+        // Update the user's name
+        user.name = newName;
+        await user.save();
+
+        res.json({ message: "Username updated successfully", name: user.name });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
+
+
+
+export const changePassword = async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Both current and new passwords are required" });
+    }
+
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check if the current password matches the stored one
+        const isMatch = await user.comparePassword(currentPassword);
+
+        if (!isMatch) {
+            return res.status(400).json({ message: "Current password is incorrect" });
+        }
+
+        // Update the password and save it (assuming password is hashed in user model)
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ message: "Password updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
+};
