@@ -13,7 +13,7 @@ export const getAllProducts = async(req,res) => {
         res.status(500).json({message : "Internal Server Error", error: error.message});
     }
 
-}
+};
 
 export const getFeaturedProducts = async(req,res) => {
 
@@ -42,7 +42,8 @@ export const getFeaturedProducts = async(req,res) => {
         res.status(500).json({message: "Server Error", error: error.message});
     
     }
-}
+};
+ 
 
 export const createProduct = async(req,res) => {
 
@@ -138,7 +139,7 @@ export const getProductsByCategory = async(req,res) => {
         res.status(500).json({ message : "server error", error: error.message});
         
     }
-}
+};
 
 export const toggleFeaturedProduct = async(req,res) => {
     

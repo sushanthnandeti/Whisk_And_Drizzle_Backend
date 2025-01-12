@@ -43,6 +43,7 @@ const setCookies = (res, accessToken, refreshToken) => {
 // Signup Logic
 
 export const signup =  async (req,res) => {
+    console.log("client request received")
     const { email, password, name} = req.body;
     
     try {
